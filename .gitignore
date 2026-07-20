@@ -1,0 +1,4 @@
+esp/
+run.sh
+*.efi
+*.img
