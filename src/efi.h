@@ -54,18 +54,28 @@ typedef struct EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
 typedef EFI_STATUS (EFIAPI *EFI_TEXT_STRING) (EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL* This, char16_t* String);
 typedef EFI_STATUS (EFIAPI *EFI_TEXT_SET_ATTRIBUTE) (EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL* This, uint64_t Attribute);
 typedef EFI_STATUS (EFIAPI *EFI_TEXT_CLEAR_SCREEN) (EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL* This);
+typedef EFI_STATUS (EFIAPI *EFI_TEXT_SET_MODE) (EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL* This, uint64_t ModeNumber);
+
+typedef struct {
+	int32_t max_mode;
+	int32_t mode;
+	int32_t attribute;
+	int32_t cursor_column;
+	int32_t cursor_row;
+	bool cursor_visible;
+} SIMPLE_TEXT_OUTPUT_MODE;
 
 typedef struct EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL {
 	void* reset;
 	EFI_TEXT_STRING output_string;
 	void* test_string;
 	void* query_mode;
-	void* set_mode;
+	EFI_TEXT_SET_MODE set_mode;
 	EFI_TEXT_SET_ATTRIBUTE set_attribute;
 	EFI_TEXT_CLEAR_SCREEN clear_screen;
 	void* set_cursor_position;
 	void* enable_cursor;
-	void* mode;
+	SIMPLE_TEXT_OUTPUT_MODE* mode;
 } EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
 
 // --- EFI_TABLE_HEADER ---

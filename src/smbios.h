@@ -50,10 +50,44 @@ typedef struct {
 	uint8_t version;
 	uint8_t serial_number;
 	uint8_t uuid[16];
-	uint8_t wakeup_type;
+	uint8_t wakeup_type;  // this is an enum
 	uint8_t sku_number;
 	uint8_t family;
 } __attribute__((packed)) SMBIOS_SYSTEM_INFO;
+
+// --- Processor Information (type 4) ---
+
+typedef struct {
+	SMBIOS_HEADER header;
+	uint8_t socket_designation;
+	uint8_t processor_type;  // this is an enum
+	uint8_t processor_family;  // this is an enum
+	uint8_t processor_manufacturer;
+	uint64_t processor_id;
+	uint8_t processor_version;
+	uint8_t voltage;
+	uint16_t external_clock;
+	uint16_t max_speed;
+	uint16_t current_speed;
+	uint8_t status;  // bitflags
+	uint8_t processor_upgrade;  // this is an enum
+	uint16_t l1_cache_handle;
+	uint16_t l2_cache_handle;
+	uint16_t l3_cache_handle;
+	uint8_t serial_number;
+	uint8_t asset_tag;
+	uint8_t part_number;
+	uint8_t core_count;
+	uint8_t core_enabled;
+	uint8_t thread_count;
+	uint16_t processor_characteristics;  // bitfield
+	uint16_t processor_family2;  // this is an enum
+	uint16_t core_count2;
+	uint16_t core_enabled2;
+	uint16_t thread_count2;
+	uint16_t thread_enabled;
+	uint8_t socket_type;
+} __attribute__((packed)) SMBIOS_PROCESSOR_INFO;
 
 // helper
 char* smbios_string_by_index(SMBIOS_HEADER* header, uint8_t idx);
