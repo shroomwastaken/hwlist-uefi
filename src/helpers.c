@@ -86,3 +86,30 @@ void output_field_decimal(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL* con_out, uint64_t num
 	con_out->output_string(con_out, u": ");
 	con_out->output_string(con_out, buf);
 }
+
+uint64_t strlen8(char* c) {
+	if (c == NULL) return 0;
+	uint64_t res = 0;
+	while (*(c++) != '\0') res++;
+	return res;
+}
+
+void output_field_string8(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL* con_out, EFI_BOOT_SERVICES* bs, char* string, char16_t* label) {
+	uint64_t len = strlen8(string);
+
+	// TODO: add error checking for allocation
+
+	char16_t* buffer = NULL;
+	bs->allocate_pool(EfiBootServicesData, (len + 1)*sizeof(char16_t), (void**)&buffer);
+
+	for (uint64_t i = 0; i <= len; i++) {
+		buffer[i] = (char16_t)string[i];
+	}
+
+	con_out->output_string(con_out, u"\r\n");
+	con_out->output_string(con_out, label);
+	con_out->output_string(con_out, u": ");
+	con_out->output_string(con_out, buffer);
+
+	bs->free_pool(buffer);
+}

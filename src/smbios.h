@@ -20,13 +20,17 @@ typedef struct {
 	uint8_t bcd_revision;
 } __attribute__((packed)) SMBIOS_ENTRY_POINT;
 
+// only required types until i figure out which other ones are needed
 typedef enum : uint8_t {
-	BiosInfo             = 0,
-	SystemInfo           = 1,
-	BaseboardInformation = 2,
-	SystemEnclosure      = 3,
-	ProcessorInformation = 4,
-	EndOfTable           = 127
+	BiosInfo                 = 0,
+	SystemInfo               = 1,
+	SystemEnclosure          = 3,
+	ProcessorInfo            = 4,
+	PhysicalMemoryArray      = 16,
+	MemoryDevice             = 17,
+	MemoryArrayMappedAddress = 19,
+	SystemBootInformation    = 32,
+	EndOfTable               = 127
 } SMBIOS_TYPE;
 
 typedef struct {
@@ -34,5 +38,24 @@ typedef struct {
 	uint8_t length;
 	uint16_t handle;
 } __attribute__((packed)) SMBIOS_HEADER;
+
+// most times whenever fields are uint8_t, they're indices of strings
+
+// --- System Information (type 1) ---
+
+typedef struct {
+	SMBIOS_HEADER header;
+	uint8_t manufacturer;
+	uint8_t product_name;
+	uint8_t version;
+	uint8_t serial_number;
+	uint8_t uuid[16];
+	uint8_t wakeup_type;
+	uint8_t sku_number;
+	uint8_t family;
+} __attribute__((packed)) SMBIOS_SYSTEM_INFO;
+
+// helper
+char* smbios_string_by_index(SMBIOS_HEADER* header, uint8_t idx);
 
 #endif // SMBIOS_H

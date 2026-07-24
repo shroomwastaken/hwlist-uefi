@@ -14,19 +14,33 @@ void key_shutdown(EFI_SYSTEM_TABLE* sys) {
 
 void read_smbios_table(EFI_SYSTEM_TABLE* SystemTable, EFI_CONFIGURATION_TABLE* table) {
 	EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL* con_out = SystemTable->con_out;
+	EFI_BOOT_SERVICES* bs = SystemTable->boot_services;
 	SMBIOS_ENTRY_POINT* entry_point = (SMBIOS_ENTRY_POINT*)table;
 
 	con_out->output_string(con_out, u"\r\n");
+	output_field_decimal(con_out, entry_point->major_version, u"SMBIOS major version");
+	output_field_decimal(con_out, entry_point->minor_version, u"SMBIOS minor version");
 	output_field_decimal(con_out, entry_point->number_of_structures, u"Total SMBIOS structures");
 
 	SMBIOS_HEADER* header = (SMBIOS_HEADER*)entry_point->table_address;
 	while (header->type != EndOfTable) {
-		con_out->output_string(con_out, u"\r\n\r\n--- new structure --- ");
+		con_out->output_string(con_out, u"\r\n");
 		output_field_decimal(con_out, header->type, u"Structure type");
-		output_field_decimal(con_out, header->length, u"Structure length");
+
+		switch (header->type) {
+			case SystemInfo: {
+				SMBIOS_SYSTEM_INFO* data = (SMBIOS_SYSTEM_INFO*)header;
+				// TODO: make this shorter somehow cause its quite unpleasant to look at
+				output_field_string8(con_out, bs, smbios_string_by_index(header, data->manufacturer), u"Manufacturer");
+				output_field_string8(con_out, bs, smbios_string_by_index(header, data->product_name), u"Product Name");
+				output_field_string8(con_out, bs, smbios_string_by_index(header, data->serial_number), u"Serial Number");
+				break;
+			};
+			// TODO: implement other types
+			default: break;
+		}
 
 		header = (SMBIOS_HEADER*)((uint8_t*)header + header->length);  // now pointing to strings
-
 		while (1) {
 			// no more strings
 			if (*(uint16_t*)header == 0x0000) {
@@ -36,8 +50,6 @@ void read_smbios_table(EFI_SYSTEM_TABLE* SystemTable, EFI_CONFIGURATION_TABLE* t
 			}
 			header = (SMBIOS_HEADER*)((uint8_t*)header + 1);
 		}
-
-		// TODO: parse structures
 	}
 }
 

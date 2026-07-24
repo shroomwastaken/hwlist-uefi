@@ -14,7 +14,9 @@
 #define EFI_SUCCESS 0
 
 typedef void* EFI_HANDLE;
-typedef uint64_t EFI_STATUS;  // this is actually UINTN
+typedef uint64_t EFI_STATUS;  // here and onwards UINTN is uint64_t since im making this for 64-bit systems
+
+// a lot of fields here are void*/unused, they're here for completeness' sake
 
 // --- EFI_SIMPLE_TEXT_INPUT_PROTOCOL ---
 
@@ -108,6 +110,90 @@ typedef struct {
 	void* update_capsule;
 	void* query_capsule_capabilities;
 } EFI_RUNTIME_SERVICES;
+
+// --- EFI_BOOT_SERVICES ---
+
+typedef enum {
+	EfiReservedMemoryType,
+	EfiLoaderCode,
+	EfiLoaderData,
+	EfiBootServicesCode,
+	EfiBootServicesData,  // i'll be using this one
+	EfiRuntimeServicesCode,
+	EfiRuntimeServicesData,
+	EfiConventionalMemory,
+	EfiUnusableMemory,
+	EfiACPIReclaimMemory,
+	EfiACPIMemoryNVS,
+	EfiMemoryMappedIO,
+	EfiMemoryMappedIOPortSpace,
+	EfiPalCode,
+	EfiPersistentMemory,
+	EfiUnacceptedMemoryType,
+	EfiMaxMemoryType
+} EFI_MEMORY_TYPE;
+
+typedef EFI_STATUS (EFIAPI *EFI_ALLOCATE_POOL) (EFI_MEMORY_TYPE PoolType, uint64_t size, void** buffer);
+typedef EFI_STATUS (EFIAPI *EFI_FREE_POOL) (void* buffer);
+
+typedef struct {
+	EFI_TABLE_HEADER header;
+
+	void* raise_tpl;
+	void* restore_tpl;
+
+	void* allocate_pages;
+	void* free_pages;
+	void* get_memory_map;
+	EFI_ALLOCATE_POOL allocate_pool;
+	EFI_FREE_POOL free_pool;
+
+	void* create_event;
+	void* set_timer;
+	void* wait_for_event;
+	void* signal_event;
+	void* close_event;
+	void* check_event;
+
+	void* install_protocol_interface;
+	void* reinstall_protocol_interface;
+	void* uninstall_protocol_interface;
+	void* handle_protocol;
+	void* reserved;
+	void* register_protocol_notify;
+	void* locate_handle;
+	void* locate_device_path;
+	void* install_configuration_table;
+
+	void* load_image;
+	void* start_image;
+	void* exit;
+	void* unload_image;
+	void* exit_boot_services;
+
+	void* get_next_monotonic_count;
+	void* stall;
+	void* set_watchdog_timer;
+
+	void* connect_controller;
+	void* disconnect_controller;
+
+	void* open_protocol;
+	void* close_protocol;
+	void* open_protocol_information;
+
+	void* protocols_per_handle;
+	void* locate_handle_buffer;
+	void* locate_protocol;
+	void* install_multiple_protocol_interfaces;
+	void* uninstall_multiple_protocol_interfaces;
+
+	void* calculate_crc32;
+
+	void* copy_mem;
+	void* set_mem;
+	void* create_event_ex;
+} EFI_BOOT_SERVICES;
 
 // --- EFI_CONFIGURATION_TABLE ---
 
