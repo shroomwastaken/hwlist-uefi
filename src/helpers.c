@@ -95,7 +95,21 @@ uint64_t strlen8(char* c) {
 }
 
 void output_field_string8(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL* con_out, EFI_BOOT_SERVICES* bs, char* string, char16_t* label) {
+	if (string == NULL) {
+		con_out->output_string(con_out, u"\r\n");
+		con_out->output_string(con_out, label);
+		con_out->output_string(con_out, u": (null)");
+		return;
+	}
+
 	uint64_t len = strlen8(string);
+
+	if (len == 0) {
+		con_out->output_string(con_out, u"\r\n");
+		con_out->output_string(con_out, label);
+		con_out->output_string(con_out, u": (empty string)");
+		return;
+	}
 
 	// TODO: add error checking for allocation
 
